@@ -49,17 +49,12 @@
 }
 
 /* Fullscreen button styling */
-.fullscreen-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
+.iframe-controls {
+    margin-bottom: 0.5rem;
 }
 
-.fullscreen-btn:hover {
-    opacity: 1;
+#fullscreen-btn svg {
+    margin-right: 0.5rem;
 }
 
 /* Styles for when the iframe is in fullscreen mode */
