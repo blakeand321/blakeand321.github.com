@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadButton = document.getElementById('load-url');
     const presetButtons = document.querySelectorAll('.preset-btn');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const quickLinkButtons = document.querySelectorAll('.quick-link-btn');
     
     // Initialize with responsive behavior
     setupResponsiveIframe();
@@ -159,4 +160,36 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleFullscreen();
         }
     });
+    
+    // Set up quick link buttons
+    quickLinkButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const url = this.getAttribute('data-url');
+            if (url) {
+                iframe.src = url;
+                urlInput.value = url;
+                
+                // Visual feedback - highlight the clicked button
+                quickLinkButtons.forEach(btn => {
+                    btn.classList.remove('btn-info');
+                    btn.classList.add('btn-outline-info');
+                });
+                this.classList.remove('btn-outline-info');
+                this.classList.add('btn-info');
+                
+                console.log(`Quick link clicked: ${url}`);
+            }
+        });
+    });
+    
+    // Initially highlight the first quick link if it matches the current iframe URL
+    const initialUrl = iframe.src;
+    const matchingQuickLink = Array.from(quickLinkButtons).find(btn => 
+        btn.getAttribute('data-url') === initialUrl
+    );
+    
+    if (matchingQuickLink) {
+        matchingQuickLink.classList.remove('btn-outline-info');
+        matchingQuickLink.classList.add('btn-info');
+    }
 });
