@@ -73,3 +73,29 @@
     z-index: 9999;
     border-radius: 0;
 }
+
+/* Theme switcher styles */
+.theme-switcher {
+    margin-left: 1rem;
+}
+
+.theme-btn.active {
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Custom styles for different themes */
+html[data-bs-theme="light"] .iframe-container {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    background-color: var(--bs-light);
+}
+
+html[data-bs-theme="dark"] .iframe-container {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+    background-color: var(--bs-dark);
+}
+
+/* Make SVG icons in theme buttons vertically align properly */
+.theme-btn svg {
+    vertical-align: -0.125em;
+    margin-right: 0.25rem;
+}

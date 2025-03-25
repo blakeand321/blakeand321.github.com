@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const presetButtons = document.querySelectorAll('.preset-btn');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     const quickLinkButtons = document.querySelectorAll('.quick-link-btn');
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    const htmlElement = document.documentElement;
     
     // Initialize with responsive behavior
     setupResponsiveIframe();
@@ -191,5 +193,82 @@ document.addEventListener('DOMContentLoaded', function() {
     if (matchingQuickLink) {
         matchingQuickLink.classList.remove('btn-outline-info');
         matchingQuickLink.classList.add('btn-info');
+    }
+    
+    // Theme Switcher functionality
+    
+    // Function to get preferred color scheme from system
+    function getPreferredColorScheme() {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+        }
+        return 'light';
+    }
+    
+    // Function to set theme
+    function setTheme(theme) {
+        // Save theme preference to localStorage
+        if (theme === 'auto') {
+            localStorage.removeItem('preferred-theme');
+            theme = getPreferredColorScheme(); 
+        } else {
+            localStorage.setItem('preferred-theme', theme);
+        }
+        
+        // Apply theme to the HTML element
+        htmlElement.setAttribute('data-bs-theme', theme);
+        
+        // Update bootstrap CSS link if needed
+        const bootstrapCss = document.getElementById('bootstrap-css');
+        const currentTheme = bootstrapCss.href.includes('dark') ? 'dark' : 'light';
+        
+        if ((theme === 'dark' && currentTheme !== 'dark') || 
+            (theme === 'light' && currentTheme !== 'light')) {
+            // Switch CSS file based on theme
+            if (theme === 'dark') {
+                bootstrapCss.href = 'https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css';
+            } else {
+                bootstrapCss.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css';
+            }
+        }
+        
+        // Update button active states
+        themeButtons.forEach(btn => {
+            btn.classList.remove('active', 'btn-primary');
+            btn.classList.add('btn-outline-primary');
+            if (btn.getAttribute('data-theme') === (theme === getPreferredColorScheme() ? 'auto' : theme)) {
+                btn.classList.add('active', 'btn-primary');
+                btn.classList.remove('btn-outline-primary');
+            }
+        });
+        
+        console.log(`Theme set to: ${theme}`);
+    }
+    
+    // Set up theme buttons
+    themeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const theme = this.getAttribute('data-theme');
+            setTheme(theme);
+        });
+    });
+    
+    // Initialize theme from saved preference or system preference
+    const savedTheme = localStorage.getItem('preferred-theme');
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else {
+        // No saved preference, use auto (system preference)
+        setTheme('auto');
+    }
+    
+    // Listen for system theme changes
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            // Only respond to system changes if we're in auto mode
+            if (!localStorage.getItem('preferred-theme')) {
+                setTheme(event.matches ? 'dark' : 'light');
+            }
+        });
     }
 });
