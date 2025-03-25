@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive iFrame</title>
+    
+    <!-- Bootstrap CSS from Replit CDN -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Responsive iFrame</h1>
+                
+                <!-- Alert with instructions -->
+                <div class="alert alert-info mb-4">
+                    <p class="mb-0">This iFrame automatically resizes to fit your screen. Try resizing your browser window or rotating your device!</p>
+                </div>
+                
+                <!-- iFrame Container with responsive behavior -->
+                <div class="iframe-container mb-4">
+                    <iframe 
+                        id="responsive-iframe" 
+                        src="https://www.example.com" 
+                        frameborder="0" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <!-- Config Panel -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        iFrame Settings
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="iframe-url" class="form-label">iFrame URL</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="iframe-url" 
+                                       value="https://www.example.com" placeholder="Enter URL">
+                                <button class="btn btn-primary" id="load-url">Load</button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Size Presets</label>
+                            <div class="btn-group w-100" role="group">
+                                <button type="button" class="btn btn-secondary preset-btn" data-width="100%" data-height="100%">Full</button>
+                                <button type="button" class="btn btn-secondary preset-btn" data-width="1024px" data-height="768px">Desktop</button>
+                                <button type="button" class="btn btn-secondary preset-btn" data-width="768px" data-height="1024px">Tablet</button>
+                                <button type="button" class="btn btn-secondary preset-btn" data-width="375px" data-height="667px">Mobile</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/responsive-iframe.js') }}"></script>
+</body>
+</html>
