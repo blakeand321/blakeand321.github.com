@@ -99,3 +99,34 @@ html[data-bs-theme="dark"] .iframe-container {
     vertical-align: -0.125em;
     margin-right: 0.25rem;
 }
+
+/* Bookmark styles */
+.bookmark-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.bookmark-item {
+    background-color: var(--bs-body-bg);
+    transition: all 0.2s ease;
+    border-color: var(--bs-border-color);
+}
+
+.bookmark-item:hover {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.bookmark-title {
+    font-size: 0.9rem;
+}
+
+.bookmark-favicon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+/* Toast notification styling */
+.notification-toast {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}

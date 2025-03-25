@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const quickLinkButtons = document.querySelectorAll('.quick-link-btn');
     const themeButtons = document.querySelectorAll('.theme-btn');
     const htmlElement = document.documentElement;
+    const addBookmarkBtn = document.getElementById('add-bookmark-btn');
+    const bookmarksContainer = document.getElementById('bookmarks-container');
+    const noBookmarksMessage = document.getElementById('no-bookmarks-message');
     
     // Initialize with responsive behavior
     setupResponsiveIframe();
@@ -271,4 +274,227 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Bookmarks Functionality
+    
+    // Function to load bookmarks from localStorage
+    function loadBookmarks() {
+        const bookmarks = JSON.parse(localStorage.getItem('iframe-bookmarks') || '[]');
+        renderBookmarks(bookmarks);
+    }
+    
+    // Function to save bookmarks to localStorage
+    function saveBookmarks(bookmarks) {
+        localStorage.setItem('iframe-bookmarks', JSON.stringify(bookmarks));
+        renderBookmarks(bookmarks);
+    }
+    
+    // Function to render bookmarks in the container
+    function renderBookmarks(bookmarks) {
+        // Clear existing bookmarks
+        while (bookmarksContainer.firstChild) {
+            if (bookmarksContainer.firstChild === noBookmarksMessage) {
+                break;
+            }
+            bookmarksContainer.removeChild(bookmarksContainer.firstChild);
+        }
+        
+        // Show or hide the "no bookmarks" message
+        if (bookmarks.length === 0) {
+            noBookmarksMessage.style.display = 'block';
+        } else {
+            noBookmarksMessage.style.display = 'none';
+            
+            // Create a container for the bookmarks
+            const bookmarksList = document.createElement('div');
+            bookmarksList.className = 'bookmark-list';
+            
+            // Add each bookmark
+            bookmarks.forEach((bookmark, index) => {
+                const bookmarkEl = createBookmarkElement(bookmark, index);
+                bookmarksList.appendChild(bookmarkEl);
+            });
+            
+            // Insert all bookmarks at once for better performance
+            bookmarksContainer.insertBefore(bookmarksList, noBookmarksMessage);
+        }
+    }
+    
+    // Function to create a bookmark element
+    function createBookmarkElement(bookmark, index) {
+        const bookmarkEl = document.createElement('div');
+        bookmarkEl.className = 'bookmark-item d-flex align-items-center p-2 mb-2 border rounded';
+        
+        // Create favicon if possible
+        let faviconHtml = '';
+        try {
+            const url = new URL(bookmark.url);
+            faviconHtml = `
+                <img src="${url.origin}/favicon.ico" class="bookmark-favicon me-2" 
+                     onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYm9va21hcmsiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHBhdGggZD0iTTIgMmEyIDIgMCAwIDEgMi0yaDhhMiAyIDAgMCAxIDIgMnYxMy41YS41LjUgMCAwIDEtLjc3Ny40MTZMOCAxMy4xMDFsLTUuMjIzIDIuODE1QS41LjUgMCAwIDEgMiAxNS41VjJ6bTItMWExIDEgMCAwIDAtMSAxdjEyLjU2Nmw0LjcyMy0yLjQ4MmEuNS41IDAgMCAxIC41NTQgMEwxMyAxNC41NjZWMmExIDEgMCAwIDAtMS0xSDR6Ii8+PC9zdmc+'" 
+                     width="16" height="16" alt="favicon">
+            `;
+        } catch (e) {
+            faviconHtml = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark me-2" viewBox="0 0 16 16">
+                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+                </svg>
+            `;
+        }
+        
+        // Create the bookmark content
+        bookmarkEl.innerHTML = `
+            <div class="flex-shrink-0">
+                ${faviconHtml}
+            </div>
+            <div class="bookmark-title flex-grow-1 text-truncate" title="${bookmark.title}">
+                ${bookmark.title}
+            </div>
+            <div class="bookmark-actions ms-2">
+                <button class="btn btn-sm btn-outline-primary load-bookmark-btn me-1" data-index="${index}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                        <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                    </svg>
+                </button>
+                <button class="btn btn-sm btn-outline-danger delete-bookmark-btn" data-index="${index}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+        
+        // Add event listeners
+        const loadBtn = bookmarkEl.querySelector('.load-bookmark-btn');
+        const deleteBtn = bookmarkEl.querySelector('.delete-bookmark-btn');
+        
+        loadBtn.addEventListener('click', () => {
+            loadBookmark(index);
+        });
+        
+        deleteBtn.addEventListener('click', () => {
+            deleteBookmark(index);
+        });
+        
+        // Make the title also clickable
+        const titleEl = bookmarkEl.querySelector('.bookmark-title');
+        titleEl.addEventListener('click', () => {
+            loadBookmark(index);
+        });
+        titleEl.style.cursor = 'pointer';
+        
+        return bookmarkEl;
+    }
+    
+    // Function to add a new bookmark
+    function addBookmark() {
+        // Get the current iframe URL and title
+        const url = iframe.src;
+        
+        // Get title from the iframe URL
+        let title = '';
+        try {
+            const urlObj = new URL(url);
+            title = urlObj.hostname.replace('www.', '');
+        } catch (e) {
+            title = url;
+        }
+        
+        // Create the bookmark object
+        const bookmark = {
+            url: url,
+            title: title,
+            added: new Date().toISOString()
+        };
+        
+        // Get existing bookmarks
+        const bookmarks = JSON.parse(localStorage.getItem('iframe-bookmarks') || '[]');
+        
+        // Check if this URL is already bookmarked
+        const existingIndex = bookmarks.findIndex(b => b.url === url);
+        
+        if (existingIndex === -1) {
+            // Add to the beginning of the array
+            bookmarks.unshift(bookmark);
+            saveBookmarks(bookmarks);
+            
+            // Show success notification
+            showNotification('Bookmark added successfully', 'success');
+        } else {
+            showNotification('This page is already bookmarked', 'warning');
+        }
+    }
+    
+    // Function to load a bookmark
+    function loadBookmark(index) {
+        const bookmarks = JSON.parse(localStorage.getItem('iframe-bookmarks') || '[]');
+        if (bookmarks[index]) {
+            iframe.src = bookmarks[index].url;
+            urlInput.value = bookmarks[index].url;
+        }
+    }
+    
+    // Function to delete a bookmark
+    function deleteBookmark(index) {
+        const bookmarks = JSON.parse(localStorage.getItem('iframe-bookmarks') || '[]');
+        if (bookmarks[index]) {
+            const deleted = bookmarks.splice(index, 1);
+            saveBookmarks(bookmarks);
+            showNotification(`Removed bookmark: ${deleted[0].title}`, 'danger');
+        }
+    }
+    
+    // Function to show notification
+    function showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} notification-toast`;
+        notification.innerHTML = message;
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.right = '20px';
+        notification.style.maxWidth = '300px';
+        notification.style.zIndex = '9999';
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s ease-in-out';
+        
+        // Add to the document
+        document.body.appendChild(notification);
+        
+        // Fade in
+        setTimeout(() => {
+            notification.style.opacity = '1';
+        }, 10);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
+    }
+    
+    // Add event listener to the Add Bookmark button
+    addBookmarkBtn.addEventListener('click', addBookmark);
+    
+    // Load bookmarks on page load
+    loadBookmarks();
+    
+    // Add event delegation for bookmark actions
+    bookmarksContainer.addEventListener('click', function(e) {
+        // Find closest button if a child element was clicked
+        const loadBtn = e.target.closest('.load-bookmark-btn');
+        const deleteBtn = e.target.closest('.delete-bookmark-btn');
+        
+        if (loadBtn) {
+            const index = parseInt(loadBtn.getAttribute('data-index'), 10);
+            loadBookmark(index);
+        } else if (deleteBtn) {
+            const index = parseInt(deleteBtn.getAttribute('data-index'), 10);
+            deleteBookmark(index);
+        }
+    });
 });
